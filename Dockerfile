@@ -25,11 +25,11 @@ RUN yum -y install nginx-${NGINX_VERSION} \
     && rm -f /etc/nginx/nginx.conf \
     && rm -Rf /usr/share/nginx/html
 
-RUN curl -sL https://rpm.nodesource.com/setup_12.x | sudo -E bash - \
+RUN curl -sL https://rpm.nodesource.com/setup_${NODE_VERSION}.x | bash - \
     && yum -y install nodejs
 
 # Default configurations for Nginx and Node
-
+RUN npm install -g forever
 
 # Clean up
 RUN rm -rf /tmp/pear \
@@ -44,6 +44,8 @@ ADD ./default.conf /etc/nginx/conf.d/default.conf
 
 # Override default nginx welcome page
 COPY html /usr/share/nginx/html
+
+RUN sed -i -e "s/<%= nginx_version %>/${NGINX_VERSION}/g" /usr/share/nginx/html/views/index.ejs
 
 # Add Scripts
 ADD ./start.sh /start.sh
